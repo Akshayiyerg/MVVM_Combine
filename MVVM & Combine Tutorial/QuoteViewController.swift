@@ -42,7 +42,9 @@ class QuoteViewModel {
     }
     
     private func callGetRandomQuotes() {
+        output.send(.toggleButton(isEnabled: false))
         quoteServiceType.getRandomQuote().sink { [weak self] completion in
+            self?.output.send(.toggleButton(isEnabled: true))
             if case .failure(let error) = completion {
                 self?.output.send(.fetchQuoteDidFail(error: error))
             }
@@ -83,7 +85,7 @@ class QuoteViewController: UIViewController {
             case .fetchQuoteDidFail(let error):
                 self?.quoteLabel.text = error.localizedDescription
             case .fetchQuoteDidSuccedd(let quote):
-                self?.quoteLabel.text = quote.content
+                self?.quoteLabel.text = "\(quote.content)\n -\(quote.author)"
             case .toggleButton(let isEnabled):
                 self?.refreshButton.isEnabled = isEnabled
             }
